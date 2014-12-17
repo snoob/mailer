@@ -2,37 +2,19 @@
 
 namespace Snoob\Component\Mailer;
 
-use Snoob\Component\Mailer\Generator\ContentGeneratorInterface;
-
-class TemplateMailer extends \Swift_Mailer implements MailerInterface
+class TemplateMailer extends AbstractMailer
 {
     /**
-     * @var string
+     * @var ContentGeneratorInterface
      */
-    protected $locale;
-
-    /**
-     * @param string $locale
-     */
-    public function setLocale($locale)
-    {
-        $this->locale = $locale;
-    }
+    protected $contentGenerator;
 
     /**
      * @param ContentGeneratorInterface $contentGenerator
      */
-    public function __construct(ContentGeneratorInterface $contentGenerator)
+    public function setContentGenerator(ContentGeneratorInterface $contentGenerator)
     {
         $this->contentGenerator = $contentGenerator;
-    }
-
-    /**
-     * @return array
-     */
-    protected function getDefaultsParameters()
-    {
-        return array('locale' => $this->locale);
     }
 
     /**
@@ -48,27 +30,15 @@ class TemplateMailer extends \Swift_Mailer implements MailerInterface
         $message->addPart($this->contentGenerator->getHtmlBody($templateLocation, $message->getTemplateVars()));
     }
 
-    //@TODO a remplacer par un event de swiftmailer
     /**
-     * @param \Swift_Mime_Message $message
-     *
-     * throws \RuntimeException
+     * {@inheritDoc}
      */
     protected function preSend(\Swift_Mime_Message $message)
     {
         if (!$message instanceof TemplateMailInterface) {
             throw new \RuntimeException('The message must implement the interface Template');
         }
-        $message->setParametersFromMailer($this->getDefaultsParameters());
+        $message->setParametersFromMailer($this->getParameters());
         $this->generateMessageContent($message);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function send(\Swift_Mime_Message $message, &$failedRecipients = null)
-    {
-        $this->preSend($message);
-        return parent::send($message, $failedRecipients);
     }
 }
