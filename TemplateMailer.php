@@ -36,6 +36,20 @@ class TemplateMailer extends \Swift_Mailer implements MailerInterface
     }
 
     /**
+     * @param TemplateMailInterface $message
+     */
+    protected function generateMessageContent(TemplateMailInterface $message)
+    {
+        $templateLocation = $this->contentGenerator->getTemplateLocation($message->getTemplateReference());
+        if ($message->getSubject() === null) {
+            $message->setSubject($this->contentGenerator->getSubject($templateLocation, $message->getTemplateVars()));
+        }
+        $message->setBody($this->contentGenerator->getTextBody($templateLocation, $message->getTemplateVars()));
+        $message->addPart($this->contentGenerator->getHtmlBody($templateLocation, $message->getTemplateVars()));
+    }
+
+    //@TODO a remplacer par un event de swiftmailer
+    /**
      * @param \Swift_Mime_Message $message
      *
      * throws \RuntimeException
@@ -46,6 +60,7 @@ class TemplateMailer extends \Swift_Mailer implements MailerInterface
             throw new \RuntimeException('The message must implement the interface Template');
         }
         $message->setParametersFromMailer($this->getDefaultsParameters());
+        $this->generateMessageContent($message);
     }
 
     /**

@@ -1,6 +1,6 @@
 <?php
 
-namespace Snoob\Component\Mailer\Generator;
+namespace Snoob\Component\Mailer;
 
 interface ContentGeneratorInterface
 {

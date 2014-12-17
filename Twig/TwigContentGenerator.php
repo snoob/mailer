@@ -2,7 +2,7 @@
 
 namespace Snoob\Component\Mailer\Twig;
 
-use Snoob\Component\Mailer\Generator\ContentGeneratorInterface;
+use Snoob\Component\Mailer\ContentGeneratorInterface;
 
 class TwigContentGenerator implements ContentGeneratorInterface
 {
@@ -33,6 +33,7 @@ class TwigContentGenerator implements ContentGeneratorInterface
 
         return $template->renderBlock($block, $parameters);
     }
+
 
     /**
      * {@inheritDoc}

@@ -2,7 +2,7 @@
 
 namespace Snoob\Component\Mailer;
 
-class TemplateMail extends \Swift_Message implements MailInterface
+abstract class AbstractTemplateMail extends \Swift_Message implements TemplateMailInterface
 {
     /**
      * @var bool
@@ -10,14 +10,14 @@ class TemplateMail extends \Swift_Message implements MailInterface
     protected $useTemplateTranslation = true;
 
     /**
-     * @var  array
-     * @see  setTemplateReference()
+     * @var array
+     * @see setTemplateReference()
      */
     protected $templateReference = array();
 
     /**
-     * @var  array
-     * @see  getTemplateVars()
+     * @var array
+     * @see getTemplateVars()
      */
     protected $templateVars = array();
 
@@ -45,9 +45,11 @@ class TemplateMail extends \Swift_Message implements MailInterface
     }
 
     /**
-     * @param $addresses with keys to, bcc, from
+     * @param  array $addresses with keys to, bcc, from
+     *
+     * @return TemplateMailInterface
+     *
      * @throws \InvalidArgumentException
-     * @return MailInterface
      */
     public function setAddresses(array $addresses)
     {
@@ -61,7 +63,7 @@ class TemplateMail extends \Swift_Message implements MailInterface
     }
 
     /**
-     * @return MailInterface
+     * @return TemplateMailInterface
      */
     protected function dontUseTemplateTranslation()
     {
@@ -69,18 +71,30 @@ class TemplateMail extends \Swift_Message implements MailInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @param  string|null $locale : null ou false désactive la traduction par template
+     *
+     * @return TemplateMailInterface
      */
     public function setLocale($locale)
     {
         $this->useTemplateTranslation =  !empty($locale);
         $this->templateVars['locale'] = $locale ? $locale : null;
         $this->templateReference['locale'] = $this->templateVars['locale'];
+
         return $this;
     }
 
     /**
-     * {@inheritDoc}
+     * Les templates des emails sont stockés dans Bundle/Resources/mails.
+     * Pour ne pas surcharger les yms on traduit les emails directement dans les templates.
+     * Pour traduire un template on ajoute le dossier à l'arborescence ci-dessus (dans Bundle/Resources/mail/locale)
+     * Cette méthode renvoie les informations necessaires à la localisation du template
+     *
+     * @param  string      $bundle : AcmeDemoBundle
+     * @param  string      $name  : nom du template sans l'extension
+     * @param  string|null $locale : si le template est traduit
+     *
+     * @return TemplateMailInterface
      */
     public function setTemplateReference($bundle, $name)
     {
@@ -98,8 +112,9 @@ class TemplateMail extends \Swift_Message implements MailInterface
     }
 
     /**
-     * @param array $vars
-     * @return MailInterface
+     * @param  array $templateVars
+     *
+     * @return TemplateMailInterface
      */
     protected function addTemplateVars(array $templateVars)
     {
@@ -110,7 +125,10 @@ class TemplateMail extends \Swift_Message implements MailInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @param  string $name
+     * @param  string $var
+     *
+     * @return TemplateMailInterface
      */
     public function addTemplateVar($name, $var)
     {
@@ -128,21 +146,19 @@ class TemplateMail extends \Swift_Message implements MailInterface
 
     /**
      * Méthode à implementer pour définir l'expéditeur, le ou les destinataire(s) et l'objet du mail
-     * @param array $parameters
-     * @return MailInterface
+     *
+     * @param  array $parameters
+     *
+     * @return TemplateMailInterface
      */
-    protected function buildHeader(array $parameters)
-    {
-        return $this;
-    }
+    abstract protected function buildHeader(array $parameters);
 
     /**
-     * Méthode à implementer pour définir la référence au template et les variables de templates du mail
-     * @param array $parameters
-     * @return MailInterface|void
+     * Méthode à implementer pour définir l'expéditeur, le ou les destinataire(s) et l'objet du mail
+     *
+     * @param  array $parameters
+     *
+     * @return TemplateMailInterface
      */
-    protected function buildView(array $parameters)
-    {
-        return $this;
-    }
+    abstract protected function buildView(array $parameters);
 }

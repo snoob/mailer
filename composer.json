@@ -3,6 +3,13 @@
     "license": "MIT",
     "type": "library",
     "description": "Mailer component",
+    "keywords":    ["mailer"],
+    "authors": [
+        {
+            "name": "Yannick Snobbert",
+            "email": "yannicksnobbert@gmail.com"
+        }
+    ],
     "autoload": {
         "psr-4": { "Snoob\\Component\\Mailer\\": ""}
     },
