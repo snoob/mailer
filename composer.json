@@ -1,0 +1,16 @@
+{
+    "name": "snoob/mailer",
+    "license": "MIT",
+    "type": "library",
+    "description": "Mailer component",
+    "autoload": {
+        "psr-4": { "Snoob\\Component\\Mailer\\": ""}
+    },
+    "require": {
+        "php": ">=5.4",
+        "swiftmailer/swiftmailer": "~5.3"
+    },
+    "require-dev": {
+        "twig/twig": "~1.12"
+    }
+}
